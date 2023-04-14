@@ -14,5 +14,6 @@ This is a simple WebSocket server built with Node.js and the ws package. The ser
 
 # Execution Steps
 Server:
+
     node index.js
     
