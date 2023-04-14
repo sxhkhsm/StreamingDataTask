@@ -17,3 +17,5 @@ Server:
 
     node index.js
     
+Client:
+    open index.html
