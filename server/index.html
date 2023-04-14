@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Question and Answer</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    form {
+      margin: 2rem auto;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    label {
+      display: block;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    input,
+    textarea {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 0.5rem;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #007acc;
+      color: #fff;
+      font-size: 1.1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+  </style>
+</head>
+
+<body>
+  <form>
+    <label for="question">Enter your question:</label>
+    <input type="text" id="question" name="question" />
+    <label id="answer-label" for="answer">Answer:</label>
+    <textarea id="answer" name="answer" rows=3 cols="60"></textarea>
+    <button type="button" onclick="getAnswer()">Get Answer</button>
+  </form>
+
+  <script>
+    const ws = new WebSocket("ws://localhost:8765");
+    let allData = "";
+    function getAnswer() {
+      allData = "";
+      document.getElementById("answer").value = "";
+      const question = document.getElementById("question").value;
+      ws.send(JSON.stringify({ type: "question", question: question }));
+    }
+
+
+    ws.addEventListener("message", function (event) {
+      const data = JSON.parse(event.data);
+      console.log(data);
+
+      allData += data.answer; // Append new data to the existing string
+      allData += " ";
+      document.getElementById("answer").value = allData; // Update the answer element
+
+      // Calculate number of rows based on number of characters and set label
+      const numChars = allData.length;
+      const numRows = Math.ceil(numChars / 60); // Assuming 60 characters per row
+      const label = document.getElementById("answer-label");
+      label.innerHTML = `Answer (${numRows} row${numRows !== 1 ? "s" : ""}):`;
+
+      // Set number of rows in textarea
+      document.getElementById("answer").rows = numRows;
+    });
+
+    document.getElementById("answer").value = ""
+
+  </script>
+</body>
+
+</html>
